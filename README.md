@@ -18,15 +18,9 @@
 |3| [Snap](./Snap-file)| In Development |
 
 ## Installation Procedure
-
-1. Clone the Repo using :
+Copy the Following command and Paste in your terminal (ctrl + shift + v) 
  ```bash
-    git clone https://github.com/mohammedrashithkp/ros2-installer.git && cd ros2-installer 
+    curl -sSL https://raw.githubusercontent.com/mohammedrashithkp/ros2-installer/stable/ros2-installer.sh | bash
  ```
-
-2. Run the Installation Script after giving necessary permission using:
-   ```bash
-      sudo chmod +x ros2-installer.sh && sudo ./ros2-installer.sh
-   ```
 
 
