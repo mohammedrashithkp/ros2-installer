@@ -1,44 +1,133 @@
 
-> Disclaimer:
-"This is not an official ROS2 distribution. This is a file that installs from the official ROS2 repositories. The owner of this project, platform, or service shall not be held liable for any loss, damage, or corruption of data, whether caused by system failures, user errors, or any other unforeseen circumstances. By using this service, the user acknowledges and agrees that they are solely responsible for backing up and protecting their data. The owner makes no representations or warranties regarding the security, accuracy, or completeness of any data stored or processed through the service."
-![](./assets/Ros2-installer.png)
-## Who is it for
-- Beginners who are starting out ROS2 and are not completelty comfortable with terminal
-- Experienced Dev who need a least-effort set-up
-- Devs who are too lazy to copy paste the commands from Official Website  
+# ROS2 Installer
+
+> **Disclaimer:**
+> This is not an official ROS2 distribution.
+> This project provides convenient automation to install ROS2 using the official repositories. The owner of this project, platform, or service shall not be held liable for any loss, damage, or corruption of data, whether caused by system failures, user errors, or any other unforeseen circumstances. By using this service, you acknowledge and agree that you are solely responsible for backing up and protecting your data. No warranties are provided regarding the security, accuracy, or completeness of any data stored or processed through the service.
+
+![ROS2 Installer Banner](./assets/Ros2-installer.png)
+
+---
+
+## Who is it for?
+
+* 🐣 **Beginners** who want a guided ROS2 setup without memorizing commands
+* 💼 **Experienced developers** needing a quick, repeatable installation
+* 🦥 **Anyone** who doesn’t feel like copy-pasting commands from the ROS2 docs every time
+
+---
+
+## Installation Options
+
+| Sl.No | Option                                                         | Status         |
+| ----- | -------------------------------------------------------------- | -------------- |
+| 1     | [Python Package (pip)](#installation-via-pip-recommended)     | **Stable ✅**   |
+| 2     | [Bash Script](#bash-script-install-alternative)               | Stable         |
+
+---
+
+## 🚀 Installation via pip (**Recommended**)
+
+> **Tip:**
+> Read the [source code](./python_package/ros2_installer/cli.py) or ask ChatGPT what the script does before running any installer.
+
+**PyPI Project Page:**  [https://pypi.org/project/ros2-installer/](https://pypi.org/project/ros2-installer/)
+
+**Install:**
+
+```bash
+pip install ros2-installer
+```
+
+**Run the installer (with sudo):**
+
+```bash
+sudo ros2-installer
+```
+
+You will be prompted to select:
+
+* Your desired ROS2 distro (`humble`, `iron`, etc.)
+* Workspace name and location
+* Whether to auto-source the environment
+
+---
+
+## 🐚 Bash Script Install (Alternative)
+
+If you prefer a one-liner:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mohammedrashithkp/ros2-installer/stable/ros2-installer.sh | bash
+```
+
+This script performs the same installation logic in bash.
+
+---
+
+## 🧪 Testing with Containers
+
+You can test the installer in a clean environment using Podman or Docker:
+
+```bash
+# Clone the repo
+
+git clone https://github.com/mohammedrashithkp/ros2-installer.git
+
+# Go into project root
+
+cd ros2-installer
+
+# If you are using docker
+
+docker build -f test/Dockerfile -t ros2-installer .
+docker run -it --rm ros2-installer
+
+# If you are using podman
+
+podman build -f test/Dockerfile -t ros2-installer .
+podman run -it --rm ros2-installer
+
+```
+
+---
+
+## 🛠 What Happens Under the Hood?
+
+1. **Ubuntu Codename Detection:**
+   The installer reads `/etc/os-release` to detect your codename (`jammy`, `noble`, etc.).
+2. **Prompt for ROS2 Distro:**
+   You choose which ROS2 release to install.
+3. **Dependencies:**
+   Installs required system packages and ROS2 Desktop.
+4. **Workspace Creation:**
+
+   * Prompts you for a workspace name/location.
+   * Initializes the workspace (`src`, `build`, `install` folders).
+5. **Environment Sourcing:**
+   Optionally appends `source /path/to/install/setup.bash` to your `~/.bashrc`.
+
+After installation, you can:
+
+* Clone ROS2 packages into your `src` folder.
+* Build with `colcon build`.
+* Start working immediately.
+
+For creating new packages, follow the [official ROS2 tutorial](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html).
+
+---
+
+## ⭐ Star the Project
+
+If this saves you time, please [star the repository](https://github.com/mohammedrashithkp/ros2-installer)!
+Happy ROS2 hacking!
+
+---
+
+## 📜 License
+
+See [LICENSE](./LICENSE) for details.
+
+---
 
 
-## Installation options
-
-
-|Sl.No|Options | Status |
-|---|-----|---|
-|1| [Bash-Script](#installation-procedure)| Stable|
-|2| [Debian](./Deb-file)| In Development |
-|3| [Snap](./Snap-file)| In Development |
-
-## Installation Procedure
-
-**Pro tip :  Read the next section before proceeding and at-least ask the chatgpt what the  [script](https://raw.githubusercontent.com/mohammedrashithkp/ros2-installer/stable/ros2-installer.sh) does before running a random script from internet.**
-
-Copy the Following command and Paste in your terminal (ctrl + shift + v) 
- ```bash
-    curl -sSL https://raw.githubusercontent.com/mohammedrashithkp/ros2-installer/stable/ros2-installer.sh | bash
- ```
-
-## What Happens under the hood
-
-Here the `UBUNTU_CODENAME` is used from `/etc/os-releases` to detect the ubuntu-codename such as jammy,noble etc as the ros packages are specific to each.After detecting ,it will show the names of the available ros2 distro (humble,jazzy etc) and prompts the user to enter the distro they wish to install.
-
-It proceeds to install the dependencies and ros2-disro in the Desktop form, which contains all the necessary things to get started.The setting up of locale and ros2-distro-desktop takes some time so kindly be patient .
-
-Now we proceed to workspace creation which works like virtual environments in Python .You can treat it as a folder with all the necessary files to run ros2 packages.By sourcing the workspace we are able to run ros2 nodes from anywhere in the system.The script will prompt the user for a name and the path where you want to set it up ,the default is ros2_ws and your desktop .
-
-Later we create `workspace_folder/src` to store all the ros2 packages and initialise the workspace .Now you end up with a proper workspace with src ,build ,install folders .
-
-And as a final step , you are prompted whether you need to add the commands for sourcing in the ~/.bashrc .Adding it will allow you to run the packages installed in the ros2 workspace from anywhere in your system .Denying it means that you have to run `source /path/to/workspace/install/setup.bash` before accessing ros2 packages to tell the system where to look for the files.
-
-Now you can clone your desired ros2 projects into your src folder and run colcon build at workspace folder level or you can create new package by following the [official documentation](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html)
-
-
-**Kindly star the [repo](https://github.com/mohammedrashithkp/ros2-installer) if it helped you save time and have a nice day!!**

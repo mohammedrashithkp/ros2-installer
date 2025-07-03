@@ -1,0 +1,2 @@
+[console_scripts]
+ros2-installer = ros2_installer.cli:main

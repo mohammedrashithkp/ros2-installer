@@ -1,0 +1,45 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        python3-venv \
+        sudo \
+        vim \
+        locales && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install core packages
+RUN python3 -m pip install --upgrade \
+    pip==25.1.1 \
+    setuptools==80.9.0 \
+    wheel==0.45.1
+
+# Create non-root user early
+RUN useradd -ms /bin/bash rosuser && \
+    echo "rosuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set working directory in rosuser's home
+WORKDIR /home/rosuser/app
+
+# Copy all project files
+COPY ../python_package/ros2_installer ./ros2_installer
+COPY ../python_package/pyproject.toml .
+COPY ../python_package/LICENSE .
+COPY ../python_package/README.md .
+
+# Ensure rosuser owns them
+RUN chown -R rosuser:rosuser /home/rosuser/app
+
+# Install CLI system-wide (still runs as root)
+RUN pip install .
+
+# Switch to non-root user
+USER rosuser
+
+# Add /usr/local/bin to PATH
+ENV PATH="/usr/local/bin:$PATH"
+
+# Entrypoint
+ENTRYPOINT ["ros2-installer"]
