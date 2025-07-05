@@ -127,18 +127,18 @@ def main():
             "update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8",
             "export LANG=en_US.UTF-8"
         ]),
-        ("Adding ROS 2 repository", ["apt-get update",
-            "apt-get install -y curl gnupg ",
+        ("Adding ROS 2 repository", ["apt-get -q=2 update",
+            "apt-get -q=2 install -y curl gnupg ",
             "curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg",
             'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] '
             'http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" '
             '| tee /etc/apt/sources.list.d/ros2.list > /dev/null'
         ]),
         ("Updating package lists", [
-            "apt-get update"
+            "apt-get -q=2 update"
         ]),
         ("Installing ROS 2 packages", [
-            f"apt-get install ros-{ros_choice}-desktop -y"
+            f"apt-get -q=2 install ros-{ros_choice}-desktop -y"
         ]),
         ("Making setup.bash executable", [
             f"chmod +x /opt/ros/{ros_choice}/setup.bash"
