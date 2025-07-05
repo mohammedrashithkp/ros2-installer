@@ -60,8 +60,8 @@ check_os_version() {
 check_os_version
 
 # Ensure system dependencies are met
-display_in_container "Updating System" apt-get update -y
-display_in_container "Installing Dependencies" apt-get install -y curl software-properties-common locales 
+display_in_container "Updating System" apt-get -q=2 update -y
+display_in_container "Installing Dependencies" apt-get -q=2 install -y curl software-properties-common locales 
 
 # Set up locales
 echo "Setting up locales..."
@@ -77,7 +77,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 display_in_container "Updating Package Lists After Adding Repository" apt update
 
 # Install the relevant ROS 2 packages
-display_in_container "Installing ROS 2 Packages" apt install ros-${ROS_DISTRO}-desktop -y
+display_in_container "Installing ROS 2 Packages" apt-get -q=2 install ros-${ROS_DISTRO}-desktop -y
 
 # Set up the ROS 2 environment
 echo "Setting up ROS 2 environment..."
@@ -88,7 +88,7 @@ echo "ROS 2 installation complete!"
 
 # Function to install colcon
 install_colcon() {
-    display_in_container "Installing colcon and Dependencies" apt update && apt install -y python3-colcon-common-extensions 
+    display_in_container "Installing colcon and Dependencies" apt-get -q=2 update && apt-get -q=2 install -y python3-colcon-common-extensions 
 }
 
 # Check if colcon is installed
