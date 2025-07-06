@@ -16,7 +16,7 @@ from rich.progress import (
     MofNCompleteColumn,
 )
 from rich.prompt import Prompt, Confirm
-
+import pwd
 console = Console()
 
 UBUNTU_ROS_SUPPORT = {
@@ -67,6 +67,14 @@ def ensure_colcon_installed():
         run_command("apt-get install -y python3-colcon-common-extensions", abort_on_fail=True)
     else:
         console.print("[green]colcon already installed.[/green]")
+
+def get_original_user_home():
+    sudo_user = os.environ.get("SUDO_USER")
+    if sudo_user:
+        return pwd.getpwnam(sudo_user).pw_dir
+    else:
+        return os.path.expanduser("~")
+
 
 def main():
     rerun_with_sudo()
@@ -175,7 +183,7 @@ def main():
     if args.make_workspace == "yes":
         default_workspace_name = "ros2_ws"
         src_folder = "src"
-        user_home = os.path.expanduser("~")
+        user_home = get_original_user_home()
         desktop_dir = os.path.join(user_home, "Desktop")
 
         workspace_name = default_workspace_name
