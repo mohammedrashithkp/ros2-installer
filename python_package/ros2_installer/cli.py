@@ -56,6 +56,14 @@ def ensure_colcon_installed():
     else:
         console.print("[green]colcon already installed.[/green]")
 
+def get_original_user_home():
+    sudo_user = os.environ.get("SUDO_USER")
+    if sudo_user:
+        return pwd.getpwnam(sudo_user).pw_dir
+    else:
+        return os.path.expanduser("~")
+
+
 def main():
     
 
@@ -115,9 +123,11 @@ def main():
             "sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8",
             "export LANG=en_US.UTF-8"
         ]),
+
         ("Adding ROS 2 repository", ["sudo apt-get -q=2 update",
             "sudo apt-get -q=2 install -y curl gnupg ",
             "curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg",
+
             'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] '
             'http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" '
             '| tee /etc/apt/sources.list.d/ros2.list > /dev/null'
@@ -127,6 +137,7 @@ def main():
         ]),
         ("Installing ROS 2 packages", [
             f"sudo apt-get -q=2 install ros-{ros_choice}-desktop -y"
+
         ]),
         ("Making setup.bash executable", [
             f"chmod +x /opt/ros/{ros_choice}/setup.bash"
@@ -163,7 +174,7 @@ def main():
     if args.make_workspace == "yes":
         default_workspace_name = "ros2_ws"
         src_folder = "src"
-        user_home = os.path.expanduser("~")
+        user_home = get_original_user_home()
         desktop_dir = os.path.join(user_home, "Desktop")
 
         workspace_name = default_workspace_name
