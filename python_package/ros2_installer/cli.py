@@ -25,18 +25,6 @@ UBUNTU_ROS_SUPPORT = {
     "noble": ["jazzy"],
 }
 
-def is_root():
-    return os.geteuid() == 0
-
-def rerun_with_sudo():
-    if not is_root():
-        console.print("[yellow]⚠️ Script not running as root. Re-running with sudo...[/yellow]")
-        try:
-            os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
-        except Exception as e:
-            console.print(f"[red]❌ Failed to escalate privileges: {e}[/red]")
-            sys.exit(1)
-
 def get_ubuntu_version():
     try:
         with open("/etc/os-release", "r") as f:
@@ -64,20 +52,12 @@ def run_command(command, abort_on_fail=False, env=None):
 def ensure_colcon_installed():
     if subprocess.run("which colcon", shell=True, stdout=subprocess.DEVNULL).returncode != 0:
         console.print("[yellow]colcon not found. Installing...[/yellow]")
-        run_command("apt-get install -y python3-colcon-common-extensions", abort_on_fail=True)
+        run_command("sudo apt-get -q=2 install -y python3-colcon-common-extensions", abort_on_fail=True)
     else:
         console.print("[green]colcon already installed.[/green]")
 
-def get_original_user_home():
-    sudo_user = os.environ.get("SUDO_USER")
-    if sudo_user:
-        return pwd.getpwnam(sudo_user).pw_dir
-    else:
-        return os.path.expanduser("~")
-
-
 def main():
-    rerun_with_sudo()
+    
 
     parser = argparse.ArgumentParser(description="ROS 2 Installer Script")
     parser.add_argument("--version-codename", type=str, help="Ubuntu codename (e.g., jammy)")
@@ -131,22 +111,22 @@ def main():
 
     steps = [
         ("Setting up locales", [
-            "locale-gen en_US.UTF-8",
-            "update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8",
+            "sudo locale-gen en_US.UTF-8",
+            "sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8",
             "export LANG=en_US.UTF-8"
         ]),
-        ("Adding ROS 2 repository", ["apt-get -q=2 update",
-            "apt-get -q=2 install -y curl gnupg ",
-            "curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg",
+        ("Adding ROS 2 repository", ["sudo apt-get -q=2 update",
+            "sudo apt-get -q=2 install -y curl gnupg ",
+            "curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg",
             'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] '
             'http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" '
             '| tee /etc/apt/sources.list.d/ros2.list > /dev/null'
         ]),
         ("Updating package lists", [
-            "apt-get -q=2 update"
+            "sudo apt-get -q=2 update"
         ]),
         ("Installing ROS 2 packages", [
-            f"apt-get -q=2 install ros-{ros_choice}-desktop -y"
+            f"sudo apt-get -q=2 install ros-{ros_choice}-desktop -y"
         ]),
         ("Making setup.bash executable", [
             f"chmod +x /opt/ros/{ros_choice}/setup.bash"
@@ -183,7 +163,7 @@ def main():
     if args.make_workspace == "yes":
         default_workspace_name = "ros2_ws"
         src_folder = "src"
-        user_home = get_original_user_home()
+        user_home = os.path.expanduser("~")
         desktop_dir = os.path.join(user_home, "Desktop")
 
         workspace_name = default_workspace_name
