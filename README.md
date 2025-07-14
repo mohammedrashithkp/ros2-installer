@@ -36,13 +36,13 @@
 **Install:**
 
 ```bash
-pip install ros2-installer
+pip install ros2-installer 
 ```
 
-**Run the installer (with sudo):**
+**Run the installer :**
 
 ```bash
-sudo ros2-installer
+ros2-installer
 ```
 
 You will be prompted to select:
@@ -50,6 +50,33 @@ You will be prompted to select:
 * Your desired ROS2 distro (`humble`, `iron`, etc.)
 * Workspace name and location
 * Whether to auto-source the environment
+
+### Headless Mode
+
+If you want to run everything non-interactively (e.g., in CI pipelines or Docker), you can pass all required arguments:
+
+```bash
+ros2-installer \
+  --distro humble \
+  --workspace ~/ros2_ws \
+  --yes \
+  --auto-source
+```
+
+**Arguments:**
+
+| Argument            | Description                                                  |
+|---------------------|--------------------------------------------------------------|
+| `--distro`          | ROS 2 distro to install (`humble`, `iron`)                   |
+| `--workspace`       | Path to create the workspace                                 |
+| `--yes`             | Automatically confirm all prompts                            |
+| `--auto-source`     | Automatically append sourcing commands to `.bashrc`          |
+
+Example:
+
+```bash
+ros2-installer --distro humble --workspace ~/ros2_ws --yes --auto-source
+```
 
 ---
 
